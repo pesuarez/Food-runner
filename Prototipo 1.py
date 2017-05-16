@@ -13,9 +13,11 @@ class Objeto:
         self.x=x
         self.y=y
         self.m=1
+        self.pontos=0
         
     def Mostra(self, x, y):
         gameDisplay.blit(self.main,(x,y))
+        
         
     def Recarrega(self, P):
         if P==0:
@@ -42,6 +44,8 @@ class Objeto:
 
 
 
+
+
 pygame.init()
 
 display_width = 800
@@ -58,19 +62,20 @@ y = (display_height * 0.5)
 arquivo= "homem.png"
 runner = Objeto(arquivo,x,y)
 
-xi = 100
-yi = 125
-xo= int(xi/2)
-yo= int(yi/3)
+runner.xi = 100
+runner.yi = 125
+
+h_yi=int(runner.xi/2)
+
+hamburguer = Objeto("hamburguer.png",display_width,runner.y + runner.yi - h_yi)
+hamburguer.xi = int(runner.xi/2)
+hamburguer.yi = h_yi
 
 
-hamburguer = Objeto("hamburguer.png",display_width,y + yi - yo)
+runner.Tamanho(runner.xi,runner.yi)
+hamburguer.Tamanho(hamburguer.xi,hamburguer.yi)
 
-
-runner.Tamanho(xi,yi)
-hamburguer.Tamanho(xo,yo)
-
-def descP(cnt):
+def descobreP(cnt):
     if cnt>=0 and cnt<15:
         return 0
     elif cnt>=15 and cnt<30:
@@ -89,10 +94,11 @@ def game_loop():
         
     cnt=0
     
-    x_change = 5                    #Velocidade do objeto
+    x_change = 8                       #Velocidade do objeto
     morto = 0
     pulando=0  
-    runner_anda=0                     
+    runner_anda=0 
+    runner_achata=0                    
 
     while not morto:
         
@@ -108,6 +114,9 @@ def game_loop():
                         runner_anda=-5
                 if event.key == pygame.K_RIGHT:
                         runner_anda=+5
+                if event.key == pygame.K_DOWN:
+                        runner_achata=1
+                        
                         
                         
             if event.type == pygame.KEYUP:
@@ -115,6 +124,8 @@ def game_loop():
                         runner_anda=0
                 if event.key == pygame.K_RIGHT:
                         runner_anda=0
+                if event.key == pygame.K_DOWN:
+                        runner_achata=0
                         
                     
         if pulando:
@@ -122,21 +133,32 @@ def game_loop():
             if runner.y>y:
                 runner.y=y
                 pulando=0
-
-        runner.x+=runner_anda       
+        
+        if runner.x+runner_anda>0 and runner.x+runner_anda<display_width-runner.xi:
+            runner.x+=runner_anda
                 
-        if hamburguer.x<-xo:
-            hamburguer.x=display_width+xo
+        if hamburguer.x<-hamburguer.xi:
+            hamburguer.x=display_width+hamburguer.xi
                 
         hamburguer.x -= x_change
         gameDisplay.fill((255,255,255))
         gameDisplay.blit(chao,(0,-200))
-        P= descP(cnt)
+        P= descobreP(cnt)
         runner.Recarrega(P)
-        runner.Tamanho(xi,yi)
-        runner.Mostra(runner.x,runner.y)
+        
+        runner.Tamanho(runner.xi,runner.yi)
+        
+        if runner_achata:
+            
+            runner.Tamanho(runner.xi,int(runner.yi/2))
+            runner.Mostra(runner.x,int(runner.y+runner.yi/2))
+        else:
+            runner.Mostra(runner.x,runner.y)
         
         hamburguer.Mostra(hamburguer.x,hamburguer.y)
+
+        
+    
         
         pygame.display.update()
         cnt+=3
