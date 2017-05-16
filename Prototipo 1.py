@@ -13,6 +13,8 @@ class Objeto:
         self.x=x
         self.y=y
         self.m=1
+        
+        
         self.pontos=0
         
     def Mostra(self, x, y):
@@ -36,7 +38,15 @@ class Objeto:
             self.y += 1/2 * self.m * self.v**2
     
         self.v -= 0.5
-        print(self.v)
+        
+    def Colisao(self,objeto):
+        
+        a=pygame.Rect((self.x,self.y),(self.xi,self.yi))        
+        b=pygame.Rect((objeto.x,objeto.y),(objeto.xi,objeto.yi))
+        
+        return a.colliderect(b)
+    
+        
     
     def Tamanho(self, x, y):
         
@@ -54,6 +64,7 @@ display_height = 600
 gameDisplay = pygame.display.set_mode((display_width,display_height))
 pygame.display.set_caption("Protótipo 1")
 clock = pygame.time.Clock()
+
 
 x = (display_width * 0.1)       #Posição Inicial do Personagem
 y = (display_height * 0.5)
@@ -85,6 +96,17 @@ def descobreP(cnt):
     else:
         return 3
 
+def Gameover():
+    gameover = pygame.image.load("gameover.jpeg")
+    gameover = pygame.transform.scale(gameover,(display_width,display_height))
+    gameDisplay.blit(gameover,(0,0))
+    
+def Reiniciar():
+    runner.x = (display_width * 0.1)       #Posição Inicial do Personagem
+    runner.y = (display_height * 0.5)
+    hamburguer.x = display_width
+    hamburguer.y = runner.y + runner.yi - h_yi
+    
     
 
 def game_loop():    
@@ -98,7 +120,8 @@ def game_loop():
     morto = 0
     pulando=0  
     runner_anda=0 
-    runner_achata=0                    
+    runner_achata=0
+    gameover=0                    
 
     while not morto:
         
@@ -116,7 +139,8 @@ def game_loop():
                         runner_anda=+5
                 if event.key == pygame.K_DOWN:
                         runner_achata=1
-                        
+                        runner.yi=int(runner.yi/2)
+                        runner.y=int(runner.y+runner.yi)
                         
                         
             if event.type == pygame.KEYUP:
@@ -126,47 +150,66 @@ def game_loop():
                         runner_anda=0
                 if event.key == pygame.K_DOWN:
                         runner_achata=0
+                        runner.y=runner.y-runner.yi
+                        runner.yi=int(runner.yi*2)
                         
                     
-        if pulando:
-            runner.Pula()
-            if runner.y>y:
-                runner.y=y
-                pulando=0
-        
+       
         if runner.x+runner_anda>0 and runner.x+runner_anda<display_width-runner.xi:
             runner.x+=runner_anda
                 
         if hamburguer.x<-hamburguer.xi:
             hamburguer.x=display_width+hamburguer.xi
+            
+            
+        if runner.Colisao(hamburguer):
+            gameover=1
+            
                 
         hamburguer.x -= x_change
         gameDisplay.fill((255,255,255))
         gameDisplay.blit(chao,(0,-200))
         P= descobreP(cnt)
         runner.Recarrega(P)
-        
+
         runner.Tamanho(runner.xi,runner.yi)
+        
         
         if runner_achata:
             
-            runner.Tamanho(runner.xi,int(runner.yi/2))
-            runner.Mostra(runner.x,int(runner.y+runner.yi/2))
+            runner.Tamanho(runner.xi,runner.yi)
+            runner.Mostra(runner.x,runner.y)
         else:
             runner.Mostra(runner.x,runner.y)
         
         hamburguer.Mostra(hamburguer.x,hamburguer.y)
+        
+        if pulando:
+            runner.Pula()
+            if runner.y+runner.yi>hamburguer.y+hamburguer.yi:
+                runner.y=hamburguer.y+hamburguer.yi-runner.yi
+                pulando=0
+        
+        
+            
 
         
     
-        
+        if gameover==1:
+            Gameover()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_r:                   
+                    gameover=0
+                    Reiniciar()
+                    
+            
         pygame.display.update()
         cnt+=3
         
         if cnt>60:
             cnt=0
         clock.tick(60)
-        
+
 game_loop()
 pygame.quit()
 quit()
