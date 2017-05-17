@@ -6,6 +6,8 @@ Created on Fri May 12 23:31:38 2017
 """
 
 import pygame
+import copy
+import random
 
 class Objeto:
     def __init__(self,arquivo,x,y):
@@ -17,8 +19,11 @@ class Objeto:
         
         self.pontos=0
         
-    def Mostra(self, x, y):
+    def Mostra(self,x,y):
         gameDisplay.blit(self.main,(x,y))
+        
+    def Copy(self):
+        return self
         
         
     def Recarrega(self, P):
@@ -67,7 +72,7 @@ clock = pygame.time.Clock()
 
 
 x = (display_width * 0.1)       #Posição Inicial do Personagem
-y = (display_height * 0.5)
+y = (display_height * 0.7)
 
 
 arquivo= "homem.png"
@@ -81,6 +86,19 @@ h_yi=int(runner.xi/2)
 hamburguer = Objeto("hamburguer.png",display_width,runner.y + runner.yi - h_yi)
 hamburguer.xi = int(runner.xi/2)
 hamburguer.yi = h_yi
+chao = Objeto("fundo.png",0,0)
+chao.xi=int(pygame.Surface.get_width(chao.main))
+chao.yi=int(pygame.Surface.get_height(chao.main))
+chao.yi=display_height
+chao.Tamanho(chao.xi,chao.yi)
+chao2=copy.copy(chao)
+chao2.x=chao2.x+chao2.xi
+chao.x=0
+chao.y=0
+chao2.x=chao.x+chao2.xi
+
+listarandom=range(int(display_width))
+hamburguer.x=display_width+random.choice(listarandom)
 
 
 runner.Tamanho(runner.xi,runner.yi)
@@ -103,27 +121,32 @@ def Gameover():
     
 def Reiniciar():
     runner.x = (display_width * 0.1)       #Posição Inicial do Personagem
-    runner.y = (display_height * 0.5)
+    runner.y = (display_height * 0.7)
     hamburguer.x = display_width
     hamburguer.y = runner.y + runner.yi - h_yi
+    chao.x=0
+    chao2.x=chao.x+chao2.xi
     
-    
+def Mostrav(lista):
+    for i in range(len(lista)):
+        lista[i].Mostra(display_width+random.choice(listarandom),lista[i].y)
 
-def game_loop():    
-
-    
-    chao=pygame.image.load("chao.png")
-        
+def game_loop():           
     cnt=0
+    cnth=0
     
     x_change = 8                       #Velocidade do objeto
     morto = 0
     pulando=0  
     runner_anda=0 
     runner_achata=0
-    gameover=0                    
+    gameover=0
+    listaf=[hamburguer]                
 
     while not morto:
+        gameDisplay.fill((255,255,255))
+        chao.Mostra(chao.x,chao.y)
+        chao2.Mostra(chao2.x,chao2.y)
         
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -154,26 +177,34 @@ def game_loop():
                         runner.yi=int(runner.yi*2)
                         
                     
-       
+        
         if runner.x+runner_anda>0 and runner.x+runner_anda<display_width-runner.xi:
             runner.x+=runner_anda
                 
+        #if cnth==60:
+            #listaf.append(copy.copy(hamburguer))
+            #print("dw")
+            #Mostrav(listaf)
         if hamburguer.x<-hamburguer.xi:
-            hamburguer.x=display_width+hamburguer.xi
-            
+            hamburguer.x=display_width+random.choice(listarandom)
             
         if runner.Colisao(hamburguer):
             gameover=1
             
-                
-        hamburguer.x -= x_change
-        gameDisplay.fill((255,255,255))
-        gameDisplay.blit(chao,(0,-200))
-        P= descobreP(cnt)
-        runner.Recarrega(P)
-
-        runner.Tamanho(runner.xi,runner.yi)
+        if chao.x<-chao.xi:
+            chao.x=chao2.x+chao2.xi
+        if chao2.x<-chao2.xi:
+            chao2.x=chao.x+chao.xi                        
+               
+        for i in range(len(listaf)):
+            listaf[i].x -= x_change
         
+        chao.x -= x_change
+        chao2.x -= x_change
+        
+        P = descobreP(cnt)
+        runner.Recarrega(P)
+        runner.Tamanho(runner.xi,runner.yi)      
         
         if runner_achata:
             
@@ -190,11 +221,6 @@ def game_loop():
                 runner.y=hamburguer.y+hamburguer.yi-runner.yi
                 pulando=0
         
-        
-            
-
-        
-    
         if gameover==1:
             Gameover()
             if event.type == pygame.KEYDOWN:
@@ -205,9 +231,12 @@ def game_loop():
             
         pygame.display.update()
         cnt+=3
+        cnth+=1
         
         if cnt>60:
             cnt=0
+        if cnth>60:
+            cnth=0
         clock.tick(60)
 
 game_loop()
