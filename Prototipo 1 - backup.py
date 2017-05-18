@@ -10,17 +10,13 @@ import copy
 import random
 
 class Objeto:
-    def __init__(self,arquivo,x,y,xi,yi):
+    def __init__(self,arquivo,x,y):
         self.main=pygame.image.load(arquivo)
         self.x=x
-        self.xinit=x
-        self.yinit=y
-        self.yi=yi
-        self.xi=xi
-        self.yiinit=yi
-        self.xiinit=xi
         self.y=y
         self.m=1
+        
+        
         self.pontos=0
         
     def Mostra(self,x,y):
@@ -28,6 +24,7 @@ class Objeto:
         
     def Copy(self):
         return self
+        
         
     def Recarrega(self, P):
         if P==0:
@@ -54,6 +51,8 @@ class Objeto:
         
         return a.colliderect(b)
     
+        
+    
     def Tamanho(self, x, y):
         
         self.main = pygame.transform.scale(self.main,(x,y))
@@ -77,14 +76,19 @@ y = (display_height * 0.7)
 
 
 arquivo= "homem.png"
-runner = Objeto(arquivo,x,y,100,125)
-nomedofundo="fundo.png"
+runner = Objeto(arquivo,x,y)
 
+runner.xi = 100
+runner.yi = 125
 
 h_yi=int(runner.xi/2)
-chaoaux=pygame.image.load(nomedofundo)
-hamburguer = Objeto("hamburguer.png",display_width,runner.y + runner.yi - h_yi,int(runner.xi/2),h_yi)
-chao = Objeto(nomedofundo,0,0,int(pygame.Surface.get_width(chaoaux)),int(pygame.Surface.get_height(chaoaux)))
+
+hamburguer = Objeto("hamburguer.png",display_width,runner.y + runner.yi - h_yi)
+hamburguer.xi = int(runner.xi/2)
+hamburguer.yi = h_yi
+chao = Objeto("fundo.png",0,0)
+chao.xi=int(pygame.Surface.get_width(chao.main))
+chao.yi=int(pygame.Surface.get_height(chao.main))
 chao.yi=display_height
 chao.Tamanho(chao.xi,chao.yi)
 chao2=copy.copy(chao)
@@ -93,7 +97,7 @@ chao.x=0
 chao.y=0
 chao2.x=chao.x+chao2.xi
 
-listarandom=range(int(display_width),int(display_width)*2)
+listarandom=range(int(display_width))
 hamburguer.x=display_width+random.choice(listarandom)
 
 
@@ -125,7 +129,7 @@ def Reiniciar():
     
 def Mostrav(lista):
     for i in range(len(lista)):
-        lista[i].Mostra(lista[i].x,lista[i].y)
+        lista[i].Mostra(display_width+random.choice(listarandom),lista[i].y)
 
 def game_loop():           
     cnt=0
@@ -160,8 +164,7 @@ def game_loop():
                         runner_achata=1
                         runner.yi=int(runner.yi/2)
                         runner.y=int(runner.y+runner.yi)
-                if event.key == pygame.K_ESCAPE:        
-                        gameover=1
+                        
                         
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_LEFT:
@@ -170,34 +173,23 @@ def game_loop():
                         runner_anda=0
                 if event.key == pygame.K_DOWN:
                         runner_achata=0
-                        runner.y=runner.yinit
-                        runner.yi=runner.yiinit
+                        runner.y=runner.y-runner.yi
+                        runner.yi=int(runner.yi*2)
                         
                     
         
         if runner.x+runner_anda>0 and runner.x+runner_anda<display_width-runner.xi:
             runner.x+=runner_anda
                 
-        if cnth==60:
-            print("aqui")
-            hamb=copy.copy(hamburguer)
-            hamb.x=display_width+random.choice(listarandom)
-            listaf.append(copy.copy(hamb))
-            print(listaf[0].y)
-        
+        #if cnth==60:
+            #listaf.append(copy.copy(hamburguer))
+            #print("dw")
+            #Mostrav(listaf)
+        if hamburguer.x<-hamburguer.xi:
+            hamburguer.x=display_width+random.choice(listarandom)
             
-        for i in range(len(listaf)):
-            Mostrav(listaf)
-            if listaf[i].x<-listaf[i].xi:
-                listaf.pop(i)
-                print("d1")
-                break
-        for i in range(len(listaf)):
-            if runner.Colisao(listaf[i]):
-                listaf.pop(i)
-                print("d2")
-                break
-                
+        if runner.Colisao(hamburguer):
+            gameover=1
             
         if chao.x<-chao.xi:
             chao.x=chao2.x+chao2.xi
@@ -221,15 +213,13 @@ def game_loop():
         else:
             runner.Mostra(runner.x,runner.y)
         
-        #hamburguer.Mostra(hamburguer.x,hamburguer.y)
-        
-        
+        hamburguer.Mostra(hamburguer.x,hamburguer.y)
         
         if pulando:
             runner.Pula()
-            if runner.y+runner.yi>runner.yinit+runner.yiinit:
+            if runner.y+runner.yi>hamburguer.y+hamburguer.yi:
+                runner.y=hamburguer.y+hamburguer.yi-runner.yi
                 pulando=0
-                runner.y=runner.yinit+runner.yiinit-runner.yi\
         
         if gameover==1:
             Gameover()
@@ -245,7 +235,7 @@ def game_loop():
         
         if cnt>60:
             cnt=0
-        if cnth>80:
+        if cnth>60:
             cnth=0
         clock.tick(60)
 
