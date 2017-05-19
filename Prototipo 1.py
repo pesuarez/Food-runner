@@ -71,13 +71,17 @@ gameDisplay = pygame.display.set_mode((display_width,display_height))
 pygame.display.set_caption("Protótipo 1")
 clock = pygame.time.Clock()
 
+altura_inicial=display_height * 0.7
+
 
 x = (display_width * 0.1)       #Posição Inicial do Personagem
-y = (display_height * 0.7)
+y = (altura_inicial)
 
 
 arquivo= "homem.png"
-runner = Objeto(arquivo,x,y,100,125)
+runner = Objeto(arquivo,x,y,100,130)
+if runner.yiinit%2==1:
+    runner.yiinit+=1
 nomedofundo="fundo.png"
 
 
@@ -92,6 +96,10 @@ chao2.x=chao2.x+chao2.xi
 chao.x=0
 chao.y=0
 chao2.x=chao.x+chao2.xi
+vida=Objeto("energy.png",display_width-250,20,230,40)
+vidam=Objeto("energymold.png",display_width-256,15,241,50)
+vida.Tamanho(vida.xi,vida.yi)
+vidam.Tamanho(vidam.xi,vidam.yi)
 
 listarandom=range(int(display_width),int(display_width)*2)
 hamburguer.x=display_width+random.choice(listarandom)
@@ -117,11 +125,13 @@ def Gameover():
     
 def Reiniciar():
     runner.x = (display_width * 0.1)       #Posição Inicial do Personagem
-    runner.y = (display_height * 0.7)
+    runner.y = (altura_inicial)
     hamburguer.x = display_width
     hamburguer.y = runner.y + runner.yi - h_yi
     chao.x=0
     chao2.x=chao.x+chao2.xi
+    vida.xi=vida.xiinit
+    vida.Tamanho(vida.xiinit,vida.yi)
     
 def Mostrav(lista):
     for i in range(len(lista)):
@@ -131,7 +141,7 @@ def game_loop():
     cnt=0
     cnth=0
     
-    x_change = 8                       #Velocidade do objeto
+    x_change = 10                       #Velocidade do objeto
     morto = 0
     pulando=0  
     runner_anda=0 
@@ -143,15 +153,22 @@ def game_loop():
         gameDisplay.fill((255,255,255))
         chao.Mostra(chao.x,chao.y)
         chao2.Mostra(chao2.x,chao2.y)
+        vidam.Mostra(vidam.x,vidam.y)
+        vida.Mostra(vida.x,vida.y)
         
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 morto=1
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_UP:
-                    if runner.y==y and not pulando:
+                    if runner.y==runner.yinit and not pulando:
                         runner.v=8
                         pulando=1
+                    else:
+                        print(runner.y)
+                        print(runner.yinit)
+                    
+                        
                 if event.key == pygame.K_LEFT:
                         runner_anda=-5
                 if event.key == pygame.K_RIGHT:
@@ -159,7 +176,7 @@ def game_loop():
                 if event.key == pygame.K_DOWN:
                         runner_achata=1
                         runner.yi=int(runner.yi/2)
-                        runner.y=int(runner.y+runner.yi)
+                        runner.y=runner.y+runner.yi
                 if event.key == pygame.K_ESCAPE:        
                         gameover=1
                         
@@ -170,32 +187,41 @@ def game_loop():
                         runner_anda=0
                 if event.key == pygame.K_DOWN:
                         runner_achata=0
-                        runner.y=runner.yinit
+                        runner.y-=runner.yi
+                        
                         runner.yi=runner.yiinit
                         
+                        
+                        
                     
-        
+        if vida.xi<1:
+            gameover=1
         if runner.x+runner_anda>0 and runner.x+runner_anda<display_width-runner.xi:
             runner.x+=runner_anda
                 
         if cnth==60:
-            print("aqui")
+            
             hamb=copy.copy(hamburguer)
             hamb.x=display_width+random.choice(listarandom)
             listaf.append(copy.copy(hamb))
-            print(listaf[0].y)
+        
         
             
         for i in range(len(listaf)):
             Mostrav(listaf)
             if listaf[i].x<-listaf[i].xi:
                 listaf.pop(i)
-                print("d1")
+                print("Esqueceu de pegar hamburguer")
                 break
         for i in range(len(listaf)):
             if runner.Colisao(listaf[i]):
                 listaf.pop(i)
-                print("d2")
+                print("Pegou hamburguer")
+                if not vida.xi-40<1:
+                    vida.xi-=40
+                else:
+                    gameover=1
+                vida.Tamanho(vida.xi,vida.yi)
                 break
                 
             
@@ -221,15 +247,18 @@ def game_loop():
         else:
             runner.Mostra(runner.x,runner.y)
         
-        #hamburguer.Mostra(hamburguer.x,hamburguer.y)
+        if runner_anda>0:
+            cnt+=1.8
+        elif runner_anda<0:
+            cnt-=1.3
         
         
         
-        if pulando:
+        if pulando:    
             runner.Pula()
-            if runner.y+runner.yi>runner.yinit+runner.yiinit:
+            if runner.y+runner.yi>=runner.yinit+runner.yiinit:
                 pulando=0
-                runner.y=runner.yinit+runner.yiinit-runner.yi\
+                runner.y=runner.yinit+runner.yiinit-runner.yi
         
         if gameover==1:
             Gameover()
