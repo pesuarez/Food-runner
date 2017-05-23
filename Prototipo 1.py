@@ -31,13 +31,29 @@ class Objeto:
         
     def Recarrega(self, P):
         if P==0:
-            self.main=pygame.image.load("homem1.png")
+            self.main=pygame.image.load("Bonecos Prontos/Normal/Imagens/N(1).png")
         elif P==1:
-            self.main=pygame.image.load("homem2.png")
+            self.main=pygame.image.load("Bonecos Prontos/Normal/Imagens/N(2).png")
         elif P==2:
-            self.main=pygame.image.load("homem3.png")
+            self.main=pygame.image.load("Bonecos Prontos/Normal/Imagens/N(3).png")
+        elif P==3:
+            self.main=pygame.image.load("Bonecos Prontos/Normal/Imagens/N(4).png")
+        elif P==4:
+            self.main=pygame.image.load("Bonecos Prontos/Normal/Imagens/N(5).png")
+        elif P==5:
+            self.main=pygame.image.load("Bonecos Prontos/Normal/Imagens/N(6).png")
+        elif P==6:
+            self.main=pygame.image.load("Bonecos Prontos/Normal/Imagens/N(7).png")
+        elif P==7:
+            self.main=pygame.image.load("Bonecos Prontos/Normal/Imagens/N(8).png")
+        elif P==8:
+            self.main=pygame.image.load("Bonecos Prontos/Normal/Imagens/N(9).png")
+        elif P==9:
+            self.main=pygame.image.load("Bonecos Prontos/Normal/Imagens/N(10).png")
+        elif P==10:
+            self.main=pygame.image.load("Bonecos Prontos/Normal/Imagens/N(11).png")
         else:
-            self.main=pygame.image.load("homem4.png")
+            self.main=pygame.image.load("Bonecos Prontos/Normal/Imagens/N(12).png")
     
     def Pula(self):
         if self.v>0:
@@ -109,14 +125,30 @@ runner.Tamanho(runner.xi,runner.yi)
 hamburguer.Tamanho(hamburguer.xi,hamburguer.yi)
 
 def descobreP(cnt):
-    if cnt>=0 and cnt<15:
+    if cnt>=0 and cnt<5:
         return 0
-    elif cnt>=15 and cnt<30:
+    elif cnt>=5 and cnt<10:
         return 1
-    elif cnt>=30 and cnt<45:
+    elif cnt>=10 and cnt<15:
         return 2
-    else:
+    elif cnt>=15 and cnt<20:
         return 3
+    elif cnt>=20 and cnt<25:
+        return 4
+    elif cnt>=25 and cnt<30:
+        return 5
+    elif cnt>=30 and cnt<35:
+        return 6
+    elif cnt>=35 and cnt<40:
+        return 7
+    elif cnt>=40 and cnt<45:
+        return 8
+    elif cnt>=45 and cnt<50:
+        return 9
+    elif cnt>=50 and cnt<55:
+        return 10
+    else:
+        return 11
 
 def Score(pontuacao):
     p=str(pontuacao)
@@ -154,7 +186,11 @@ def Reiniciar():
 def Mostrav(lista):
     for i in range(len(lista)):
         lista[i].Mostra(lista[i].x,lista[i].y)
-
+        
+def Menu():
+    menu=Objeto("menu.png",0,0,display_width,display_height)
+    menu.Mostra(menu.x,menu.y)
+    
 def game_loop():           
     cnt=0
     cnth=0
@@ -299,7 +335,7 @@ def game_loop():
         if cnth>80:
             cnth=0
         clock.tick(60)
-
+Menu()
 game_loop()
 pygame.quit()
 quit()
