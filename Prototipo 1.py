@@ -84,6 +84,7 @@ if runner.yiinit%2==1:
     runner.yiinit+=1
 nomedofundo="fundo.png"
 
+myfont = pygame.font.SysFont("Arial", 25)
 
 h_yi=int(runner.xi/2)
 chaoaux=pygame.image.load(nomedofundo)
@@ -104,7 +105,6 @@ vidam.Tamanho(vidam.xi,vidam.yi)
 listarandom=range(int(display_width),int(display_width)*2)
 hamburguer.x=display_width+random.choice(listarandom)
 
-
 runner.Tamanho(runner.xi,runner.yi)
 hamburguer.Tamanho(hamburguer.xi,hamburguer.yi)
 
@@ -117,6 +117,24 @@ def descobreP(cnt):
         return 2
     else:
         return 3
+
+def Score(pontuacao):
+    p=str(pontuacao)
+    score = pygame.image.load("energymold.png")
+    score = pygame.transform.scale(score,(150,50))
+    texto = myfont.render("Pontuação: ", 1, (130,30,0))
+    pontos = myfont.render(p, 1, (130,30,0))
+    gameDisplay.blit(texto, (20, 5))
+    gameDisplay.blit(score,(20,30))
+    gameDisplay.blit(pontos, (25, 50))
+
+def Attpont(x):
+    x=int(x)
+    x=+50
+    p=str(x)
+    pontos = myfont.render(p, 1, (130,30,0))
+    gameDisplay.blit(pontos, (25, 50))
+    return x
 
 def Gameover():
     gameover = pygame.image.load("gameover.jpeg")
@@ -140,14 +158,17 @@ def Mostrav(lista):
 def game_loop():           
     cnt=0
     cnth=0
-    
+
+
+
     x_change = 10                       #Velocidade do objeto
     morto = 0
     pulando=0  
     runner_anda=0 
     runner_achata=0
     gameover=0
-    listaf=[hamburguer]                
+    listaf=[hamburguer]
+    pontuacao=0
 
     while not morto:
         gameDisplay.fill((255,255,255))
@@ -155,6 +176,7 @@ def game_loop():
         chao2.Mostra(chao2.x,chao2.y)
         vidam.Mostra(vidam.x,vidam.y)
         vida.Mostra(vida.x,vida.y)
+        Score(pontuacao)
         
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -211,6 +233,7 @@ def game_loop():
             Mostrav(listaf)
             if listaf[i].x<-listaf[i].xi:
                 listaf.pop(i)
+                pontuacao=Attpont(pontuacao)
                 print("Esqueceu de pegar hamburguer")
                 break
         for i in range(len(listaf)):
@@ -266,8 +289,7 @@ def game_loop():
                 if event.key == pygame.K_r:                   
                     gameover=0
                     Reiniciar()
-                    
-            
+                       
         pygame.display.update()
         cnt+=3
         cnth+=1
