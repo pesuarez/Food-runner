@@ -21,7 +21,7 @@ class Objeto:
         self.yiinit=yi
         self.xiinit=xi
         self.y=y
-        self.m=1
+        self.m=2.5
         self.pontos=0
         self.fisico="Normal"
         
@@ -60,6 +60,8 @@ class Objeto:
             self.main=pygame.image.load("Bonecos/"+self.fisico+"/G(Deitado).png")
     
     def Pula(self):
+
+
         if self.v>0:
             self.y -= 1/2 * self.m * self.v**2
         else:
@@ -138,6 +140,7 @@ chao2.x=chao2.x+chao2.xi
 chao.x=0
 chao.y=0
 chao2.x=chao.x+chao2.xi
+
 vida=Objeto("energy.png",display_width-250,20,230,40)
 vidam=Objeto("energymold.png",display_width-256,15,241,50)
 vida.Tamanho(vida.xi,vida.yi)
@@ -249,7 +252,10 @@ def Menu():
         botao2.MostraTexto()
         botao3.MostraTexto()
         
-        
+        botaovoltar=Objeto("botaop.png",int(display_width/18),int(display_height*0.8),int(display_width/6),int(display_height/6))
+        botaovoltar.Tamanho(botaovoltar.xi,botaovoltar.yi)
+        botaovoltar.Texto("Voltar",pygame.color.Color("black"),40)
+                    
         
         for event in pygame.event.get():
             if event.type == pygame.QUIT:     
@@ -268,9 +274,6 @@ def Menu():
                 
                 if pygame.mouse.get_pressed()[0]:
                     highscores=1
-                    botaovoltar=Objeto("botaop.png",int(display_width/18),int(display_height*0.8),int(display_width/6),int(display_height/6))
-                    botaovoltar.Tamanho(botaovoltar.xi,botaovoltar.yi)
-                    botaovoltar.Texto("Voltar",pygame.color.Color("black"),40)
                     
                     with open('score.json') as hs:    
                             lista_hs = json.load(hs)
@@ -335,9 +338,27 @@ def Menu():
                     
                     
                     while opcoes:
+                        chao.Mostra(chao.x,chao.y)
+                        botaovoltar.Mostra(botaovoltar.x,botaovoltar.y)
+                        botaovoltar.MostraTexto()        
+        			        
+                           
                         
-                                
-                                
+
+
+
+                        if botaovoltar.ColisaoMouse():
+                            botaovoltar.Texto("Voltar",pygame.color.Color("green"),30)
+                            if pygame.mouse.get_pressed()[0]:
+                                opcoes = 0
+                        else:
+                            botaovoltar.Texto("Voltar",pygame.color.Color("black"),30)
+                            
+                        for event in pygame.event.get():
+                            if event.type == pygame.QUIT:
+                                highscores = 0
+                                game=1
+
                         pygame.display.update()
                         clock.tick(30)    
                         
@@ -364,10 +385,25 @@ def game_loop():
     P=0
     while not morto:
         gameDisplay.fill((255,255,255))                             #Configurações iniciais
-        chao.Mostra(chao.x,chao.y)                                  
+        chao.Mostra(chao.x,chao.y)                                 
         chao2.Mostra(chao2.x,chao2.y)
-        vidam.Mostra(vidam.x,vidam.y)
-        vida.Mostra(vida.x,vida.y)
+        pygame.fisico="Gorcddo"
+
+        if runner.fisico=="Gordo" or runner.fisico=="Muito Gordo":
+        	cor=pygame.color.Color("red")
+        elif runner.fisico=="Forte" or runner.fisico=="Muito Forte":
+        	cor=pygame.color.Color("blue")
+        elif runner.fisico=="Normal":
+        	cor=pygame.color.Color("green")
+        else:
+        	cor=pygame.color.Color("gray")
+
+        pygame.draw.rect(gameDisplay,pygame.color.Color("black"),(display_width-250,50,200,20),5)	#moldura
+        pygame.draw.rect(gameDisplay,cor,(display_width-248,52,195,15))		#barra vida
+
+
+        #vidam.Mostra(vidam.x,vidam.y)
+        #vida.Mostra(vida.x,vida.y)
         Score(pontuacao)
         
         for event in pygame.event.get():
@@ -376,7 +412,7 @@ def game_loop():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_UP:
                     if runner.y==runner.yinit :
-                        runner.v=8
+                        runner.v=6-x_change*0.01
                         pulando=1
                         P=11         
                             
@@ -434,7 +470,7 @@ def game_loop():
                 listaf[i].x -= x_change
                     
                   
-        x_change=10
+        
         chao.x -= x_change                                          #Atualiza a posição de um dos backgrounds
         chao2.x -= x_change                                         #Atualiza a posição de um dos backgrounds
         
@@ -470,6 +506,8 @@ def game_loop():
         
         if cnt>60: #Contador utilizado para o movimento do personagem
             cnt=0
+            x_change+=0.3
+
         if cnth>80: #Contador utilizado para a atualização dos objetos 
             cnth=0
         
