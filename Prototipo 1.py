@@ -8,6 +8,7 @@ Created on Fri May 12 23:31:38 2017
 import pygame
 import copy
 import random
+import json
 
 class Objeto:
     def __init__(self,arquivo,x,y,xi,yi):
@@ -22,6 +23,7 @@ class Objeto:
         self.y=y
         self.m=1
         self.pontos=0
+        self.fisico="Normal"
         
     def Mostra(self,x,y):
         gameDisplay.blit(self.main,(x,y))
@@ -31,29 +33,31 @@ class Objeto:
         
     def Recarrega(self, P):
         if P==0:
-            self.main=pygame.image.load("Bonecos Prontos/Normal/Imagens/N(1).png")
+            self.main=pygame.image.load("Bonecos/"+self.fisico+"/G(1).png")
         elif P==1:
-            self.main=pygame.image.load("Bonecos Prontos/Normal/Imagens/N(2).png")
+            self.main=pygame.image.load("Bonecos/"+self.fisico+"/G(2).png")
         elif P==2:
-            self.main=pygame.image.load("Bonecos Prontos/Normal/Imagens/N(3).png")
+            self.main=pygame.image.load("Bonecos/"+self.fisico+"/G(3).png")
         elif P==3:
-            self.main=pygame.image.load("Bonecos Prontos/Normal/Imagens/N(4).png")
+            self.main=pygame.image.load("Bonecos/"+self.fisico+"/G(4).png")
         elif P==4:
-            self.main=pygame.image.load("Bonecos Prontos/Normal/Imagens/N(5).png")
+            self.main=pygame.image.load("Bonecos/"+self.fisico+"/G(5).png")
         elif P==5:
-            self.main=pygame.image.load("Bonecos Prontos/Normal/Imagens/N(6).png")
+            self.main=pygame.image.load("Bonecos/"+self.fisico+"/G(6).png")
         elif P==6:
-            self.main=pygame.image.load("Bonecos Prontos/Normal/Imagens/N(7).png")
+            self.main=pygame.image.load("Bonecos/"+self.fisico+"/G(7).png")
         elif P==7:
-            self.main=pygame.image.load("Bonecos Prontos/Normal/Imagens/N(8).png")
+            self.main=pygame.image.load("Bonecos/"+self.fisico+"/G(8).png")
         elif P==8:
-            self.main=pygame.image.load("Bonecos Prontos/Normal/Imagens/N(9).png")
+            self.main=pygame.image.load("Bonecos/"+self.fisico+"/G(9).png")
         elif P==9:
-            self.main=pygame.image.load("Bonecos Prontos/Normal/Imagens/N(10).png")
+            self.main=pygame.image.load("Bonecos/"+self.fisico+"/G(10).png")
         elif P==10:
-            self.main=pygame.image.load("Bonecos Prontos/Normal/Imagens/N(11).png")
+            self.main=pygame.image.load("Bonecos/"+self.fisico+"/G(11).png")
+        elif P==11:
+            self.main=pygame.image.load("Bonecos/"+self.fisico+"/G(12).png")
         else:
-            self.main=pygame.image.load("Bonecos Prontos/Normal/Imagens/N(12).png")
+            self.main=pygame.image.load("Bonecos/"+self.fisico+"/G(Deitado).png")
     
     def Pula(self):
         if self.v>0:
@@ -70,9 +74,30 @@ class Objeto:
         
         return a.colliderect(b)
     
+    def ColisaoMouse(self):
+        mouse=pygame.mouse.get_pos()
+        if mouse[0]>self.x and mouse[0]<self.x+self.xi and mouse[1]>self.y and mouse[1]<self.y+self.yi:
+            return 1
+    
     def Tamanho(self, x, y):
         
         self.main = pygame.transform.scale(self.main,(x,y))
+        
+    def MostraTexto(self):
+        gameDisplay.blit(self.texto,self.recttxt)
+        
+    def Texto(self, texto,cor,tam):
+        
+        txtbotao = pygame.font.Font("freesansbold.ttf",tam)
+        txtobj = txtbotao.render(texto, True, cor)
+        self.texto=txtobj
+        self.recttxt=(self.x+(self.xi/2)-(self.texto.get_rect()[2]/2), self.y-(self.texto.get_rect()[3]/2)+self.yi/2)
+        
+        
+        
+        
+        
+                       
 
 
 
@@ -117,6 +142,9 @@ vida=Objeto("energy.png",display_width-250,20,230,40)
 vidam=Objeto("energymold.png",display_width-256,15,241,50)
 vida.Tamanho(vida.xi,vida.yi)
 vidam.Tamanho(vidam.xi,vidam.yi)
+
+
+
 
 listarandom=range(int(display_width),int(display_width)*2)
 hamburguer.x=display_width+random.choice(listarandom)
@@ -172,6 +200,10 @@ def Gameover():
     gameover = pygame.image.load("gameover.jpeg")
     gameover = pygame.transform.scale(gameover,(display_width,display_height))
     gameDisplay.blit(gameover,(0,0))
+
+def texto_objetos(texto,fonte):
+    txtobj = fonte.render(texto, True, pygame.color.Color("black"))
+    return txtobj, txtobj.get_rect()
     
 def Reiniciar():
     runner.x = (display_width * 0.1)       #Posição Inicial do Personagem
@@ -188,27 +220,151 @@ def Mostrav(lista):
         lista[i].Mostra(lista[i].x,lista[i].y)
         
 def Menu():
-    menu=Objeto("menu.png",0,0,display_width,display_height)
-    menu.Mostra(menu.x,menu.y)
+    game=0
+    botao1=Objeto("botaop.png",display_width/2,display_height/2,int(display_width/2),int(display_height/6))
+    botao1.x=botao1.x-botao1.xi/2   
+    botao1.Tamanho(botao1.xi,botao1.yi)
+    
+    botao2=copy.copy(botao1)
+    botao2.y+=botao1.yi
+    botao3=copy.copy(botao2)
+    botao3.y+=botao2.yi
+    
+    botao1.Texto("Iniciar",pygame.color.Color("black"),40)
+    botao2.Texto("Highscores",pygame.color.Color("black"),40)
+    botao3.Texto("Opções",pygame.color.Color("black"),40)
+    
+    highscoretxt=Objeto("botaop.png",display_width/2,int(display_height/20),int(display_width/2),int(display_height/10))
+    highscoretxt.x=highscoretxt.x-highscoretxt.xi/2   
+    highscoretxt.Tamanho(highscoretxt.xi,highscoretxt.yi)
+    highscoretxt.Texto("High scores",pygame.color.Color("black"),80)    
+   
+    while not game:
+        chao.Mostra(chao.x,chao.y)
+        botao1.Mostra(botao1.x,botao1.y)
+        botao2.Mostra(botao2.x,botao2.y)
+        botao3.Mostra(botao3.x,botao3.y)
+        
+        botao1.MostraTexto()
+        botao2.MostraTexto()
+        botao3.MostraTexto()
+        
+        
+        
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:     
+                game=1
+                
+            if botao1.ColisaoMouse():
+                botao1.Texto("Iniciar",pygame.color.Color("green"),40)
+                if pygame.mouse.get_pressed()[0]:
+                    game=1
+                    game_loop()
+            else:
+                botao1.Texto("Iniciar",pygame.color.Color("black"),40)
+            
+            if botao2.ColisaoMouse():
+                botao2.Texto("Highscores",pygame.color.Color("green"),40)
+                
+                if pygame.mouse.get_pressed()[0]:
+                    highscores=1
+                    botaovoltar=Objeto("botaop.png",int(display_width/18),int(display_height*0.8),int(display_width/6),int(display_height/6))
+                    botaovoltar.Tamanho(botaovoltar.xi,botaovoltar.yi)
+                    botaovoltar.Texto("Voltar",pygame.color.Color("black"),40)
+                    
+                    with open('score.json') as hs:    
+                            lista_hs = json.load(hs)
+                    
+                    print(lista_hs)  
+                    textohs = Objeto("botaop.png",0,0,0,0)
+                    x=display_width/4
+                    y=int(display_height/5)+20
+                    
+                    
+                    
+                    while highscores:
+                        chao.Mostra(chao.x,chao.y)
+                        pygame.draw.rect(gameDisplay, pygame.color.Color("white"), (int(display_width/2-(int(display_width*0.6)/2)),int(display_height/5) ,int(display_width*0.6) ,int(display_height*0.6 ))) 
+                        highscoretxt.MostraTexto()  
+                        
+                        
+                        botaovoltar.Mostra(botaovoltar.x,botaovoltar.y)
+                        botaovoltar.MostraTexto()
+            
+                        #textohs.Texto(str([i["nome"] for i in lista_hs]),pygame.color.Color("black"),25)
+                        
+                        #textohs.MostraTexto()
+                        textohs = pygame.font.Font("freesansbold.ttf",32)
+                        
+                        
+                        
+                        for i in range(len(lista_hs)):
+                            if not i>=5:
+                                gameDisplay.blit(texto_objetos(lista_hs[i]["nome"],textohs)[0],(x,(y+(i*70))))
+                                gameDisplay.blit(texto_objetos(str(lista_hs[i]["pontos"]),textohs)[0],(x+300,(y+(i*70))))
+                            
+                           
+                        
+                        if botaovoltar.ColisaoMouse():
+                            botaovoltar.Texto("Voltar",pygame.color.Color("green"),30)
+                            if pygame.mouse.get_pressed()[0]:
+                                highscores = 0
+                        else:
+                            botaovoltar.Texto("Voltar",pygame.color.Color("black"),30)
+                            
+                        for event in pygame.event.get():
+                            if event.type == pygame.QUIT:
+                                highscores = 0
+                                game=1
+                                
+                                
+                        pygame.display.update()
+                        clock.tick(30)
+            else:
+                botao2.Texto("Highscores",pygame.color.Color("black"),40)
+                
+                
+                
+                
+                
+            if botao3.ColisaoMouse():
+                botao3.Texto("Opções",pygame.color.Color("green"),40)
+                
+                if pygame.mouse.get_pressed()[0]:
+                    opcoes = 1
+                    
+                    
+                    while opcoes:
+                        
+                                
+                                
+                        pygame.display.update()
+                        clock.tick(30)    
+                        
+                        
+                        
+            else:
+                botao3.Texto("Opções",pygame.color.Color("black"),40)
+                    
+                
+                        
+        pygame.display.update()  
+        clock.tick(30)
     
 def game_loop():           
-    cnt=0
+    cnt=0                           
     cnth=0
-
-
-
-    x_change = 10                       #Velocidade do objeto
+    x_change = 10                                                   #Velocidade do objeto
     morto = 0
     pulando=0  
     runner_anda=0 
-    runner_achata=0
     gameover=0
     listaf=[hamburguer]
     pontuacao=0
-
+    P=0
     while not morto:
-        gameDisplay.fill((255,255,255))
-        chao.Mostra(chao.x,chao.y)
+        gameDisplay.fill((255,255,255))                             #Configurações iniciais
+        chao.Mostra(chao.x,chao.y)                                  
         chao2.Mostra(chao2.x,chao2.y)
         vidam.Mostra(vidam.x,vidam.y)
         vida.Mostra(vida.x,vida.y)
@@ -219,22 +375,20 @@ def game_loop():
                 morto=1
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_UP:
-                    if runner.y==runner.yinit and not pulando:
+                    if runner.y==runner.yinit :
                         runner.v=8
                         pulando=1
-                    else:
-                        print(runner.y)
-                        print(runner.yinit)
-                    
-                        
+                        P=11         
+                            
+                if event.key == pygame.K_DOWN and not pulando :
+                        runner_anda=0
+                        P = 12                              
                 if event.key == pygame.K_LEFT:
                         runner_anda=-5
+                        P=0
                 if event.key == pygame.K_RIGHT:
                         runner_anda=+5
-                if event.key == pygame.K_DOWN:
-                        runner_achata=1
-                        runner.yi=int(runner.yi/2)
-                        runner.y=runner.y+runner.yi
+                        P=0
                 if event.key == pygame.K_ESCAPE:        
                         gameover=1
                         
@@ -244,98 +398,83 @@ def game_loop():
                 if event.key == pygame.K_RIGHT:
                         runner_anda=0
                 if event.key == pygame.K_DOWN:
-                        runner_achata=0
-                        runner.y-=runner.yi
-                        
-                        runner.yi=runner.yiinit
-                        
-                        
-                        
-                    
-        if vida.xi<1:
-            gameover=1
+                        P=0
+        
         if runner.x+runner_anda>0 and runner.x+runner_anda<display_width-runner.xi:
-            runner.x+=runner_anda
+            runner.x+=runner_anda                                   #Atualiza a posição do personagem
                 
-        if cnth==60:
-            
-            hamb=copy.copy(hamburguer)
-            hamb.x=display_width+random.choice(listarandom)
-            listaf.append(copy.copy(hamb))
-        
-        
+        if cnth==60:            
+            hamb=copy.copy(hamburguer)                              #Cria um novo hamburguer
+            hamb.x=display_width+random.choice(listarandom)         #Posição aleatória da comida
+            listaf.append(copy.copy(hamb))                          #Adiciona a nova comida na lista                
             
         for i in range(len(listaf)):
-            Mostrav(listaf)
+            Mostrav(listaf)                                         #Display de todas as comidas
             if listaf[i].x<-listaf[i].xi:
-                listaf.pop(i)
-                pontuacao=Attpont(pontuacao)
-                print("Esqueceu de pegar hamburguer")
+                listaf.pop(i)                                       #Remove a comida não capturada
+                pontuacao=Attpont(pontuacao)                
                 break
+            
         for i in range(len(listaf)):
             if runner.Colisao(listaf[i]):
-                listaf.pop(i)
-                print("Pegou hamburguer")
-                if not vida.xi-40<1:
-                    vida.xi-=40
+                listaf.pop(i)                                       #Remove a comida da lista                 
+                if not vida.xi-40<1:                                #Verifica se a vida não fica negativa
+                    vida.xi-=40                                     #Remove 40 pixels de vida do personagem
                 else:
-                    gameover=1
-                vida.Tamanho(vida.xi,vida.yi)
+                    gameover=1                                      #A vida ficaria negativa, logo, gameover                   
+                vida.Tamanho(vida.xi,vida.yi)                       #Atualiza o tamanho da barra da vida
                 break
-                
-            
+                            
         if chao.x<-chao.xi:
             chao.x=chao2.x+chao2.xi
         if chao2.x<-chao2.xi:
             chao2.x=chao.x+chao.xi                        
                
         for i in range(len(listaf)):
-            listaf[i].x -= x_change
+                listaf[i].x -= x_change
+                    
+                  
+        x_change=10
+        chao.x -= x_change                                          #Atualiza a posição de um dos backgrounds
+        chao2.x -= x_change                                         #Atualiza a posição de um dos backgrounds
         
-        chao.x -= x_change
-        chao2.x -= x_change
+        if not P==12 and not pulando:
+            P = descobreP(cnt)
         
-        P = descobreP(cnt)
-        runner.Recarrega(P)
-        runner.Tamanho(runner.xi,runner.yi)      
+        runner.Recarrega(P)                                         #Atualiza a imagem do personagem
+        runner.Tamanho(runner.xi,runner.yi)                         #Atualiza o tamanho do personagem       
+        runner.Mostra(runner.x,runner.y)                            #Display do personagem
         
-        if runner_achata:
-            
-            runner.Tamanho(runner.xi,runner.yi)
-            runner.Mostra(runner.x,runner.y)
-        else:
-            runner.Mostra(runner.x,runner.y)
-        
-        if runner_anda>0:
+        if runner_anda>0:                                           #Acelera o personagem se for pra frente
             cnt+=1.8
-        elif runner_anda<0:
+        elif runner_anda<0:                                         #Desacelera o personagem se for pra frente
             cnt-=1.3
+               
         
-        
-        
-        if pulando:    
-            runner.Pula()
+        if pulando:                                                 #Função pula
+            runner.Pula()                                           
             if runner.y+runner.yi>=runner.yinit+runner.yiinit:
-                pulando=0
+                pulando=0                                           #Colisao com o "Chão"
                 runner.y=runner.yinit+runner.yiinit-runner.yi
         
-        if gameover==1:
+        if gameover==1:                                             #Testa se acabou o jogo
             Gameover()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_r:                   
                     gameover=0
                     Reiniciar()
                        
-        pygame.display.update()
+        pygame.display.update()                                     #Atualiza o display geral
         cnt+=3
         cnth+=1
         
-        if cnt>60:
+        if cnt>60: #Contador utilizado para o movimento do personagem
             cnt=0
-        if cnth>80:
+        if cnth>80: #Contador utilizado para a atualização dos objetos 
             cnth=0
-        clock.tick(60)
+        
+        clock.tick(30)
+        
 Menu()
-game_loop()
 pygame.quit()
 quit()
