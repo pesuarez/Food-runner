@@ -51,7 +51,7 @@ class Objeto:
         else:
             self.y += 1/2 * self.m * self.v**2
     
-        self.v -= 0.5
+        self.v -= 1
         
     def Colisao(self,objeto):
         
@@ -568,7 +568,7 @@ def game_loop():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_UP:
                     if runner.y==runner.yinit :
-                        runner.v=6-runner.x_change*0.01
+                        runner.v=7-runner.x_change*0.01
                         pulando=1
                         P=11         
                             
