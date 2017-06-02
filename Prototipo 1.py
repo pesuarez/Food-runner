@@ -9,7 +9,7 @@ import pygame
 import copy
 import random
 import json
-from operator import itemgetter
+
 
 class Objeto:
     def __init__(self,arquivo,x,y,xi,yi):
@@ -61,8 +61,10 @@ class Objeto:
         return a.colliderect(b)
     
     def ColisaoMouse(self):
+        
         mouse=pygame.mouse.get_pos()
         if mouse[0]>self.x and mouse[0]<self.x+self.xi and mouse[1]>self.y and mouse[1]<self.y+self.yi:
+            #if i:soundmouse.play()
             return 1
     
     def Tamanho(self, x, y):
@@ -104,7 +106,8 @@ if runner.yiinit%2==1:
 nomedofundo="fundo.png"
 
 
-
+soundgo=pygame.mixer.Sound("gameover.ogg")
+soundmouse=pygame.mixer.Sound("mouse.ogg")
 h_yi=int(runner.xi/2)
 chaoaux=pygame.image.load(nomedofundo)
 hamburguer = Objeto("hamburguer.png",display_width,runner.y + runner.yi - h_yi,int(runner.xi/2),h_yi)
@@ -118,7 +121,8 @@ chao2.x=chao2.x+chao2.xi
 chao.x=0
 chao.y=0
 chao2.x=chao.x+chao2.xi
-
+chaotuto=Objeto("fundotuto.png",0,0,int(pygame.Surface.get_width(chaoaux)),int(pygame.Surface.get_height(chaoaux)))
+chaotuto.Tamanho(chaotuto.xi,chaotuto.yi)
 
 
 
@@ -209,6 +213,8 @@ def Mostrav(lista):
         
 def Menu():
     game=0
+    pygame.mixer.music.load('Menu.mp3')
+    pygame.mixer.music.play(-1,0)
     botao1=Objeto("botaop.png",display_width/2,display_height/2,int(display_width/2),int(display_height/6))
     botao1.x=botao1.x-botao1.xi/2   
     botao1.Tamanho(botao1.xi,botao1.yi)
@@ -225,8 +231,19 @@ def Menu():
     highscoretxt=Objeto("botaop.png",display_width/2,int(display_height/20),int(display_width/2),int(display_height/10))
     highscoretxt.x=highscoretxt.x-highscoretxt.xi/2   
     highscoretxt.Tamanho(highscoretxt.xi,highscoretxt.yi)
-    highscoretxt.Texto("High scores",pygame.color.Color("black"),80)    
+    highscoretxt.Texto("High scores",pygame.color.Color("black"),80) 
+    
+    botaovoltar=Objeto("botaop.png",int(display_width/18),int(display_height*0.8),int(display_width/6),int(display_height/6))
+    botaovoltar.Tamanho(botaovoltar.xi,botaovoltar.yi)
+    botaovoltar.Texto("Voltar",pygame.color.Color("black"),40)
    
+    titulo=Objeto("titulo.png",int(display_width/2-300),25,600,100)
+    titulo.Tamanho(titulo.xi,titulo.yi)
+    titulo.Mostra(titulo.x,titulo.y)
+    botaoajuda=copy.copy(botaovoltar)
+    botaoajuda.Texto("Ajuda",pygame.color.Color("black"),20)
+    botaovoltar.x=display_width-200
+    
     while not game:
         chao.Mostra(chao.x,chao.y)
         botao1.Mostra(botao1.x,botao1.y)
@@ -236,17 +253,59 @@ def Menu():
         botao1.MostraTexto()
         botao2.MostraTexto()
         botao3.MostraTexto()
+        titulo.Mostra(titulo.x,titulo.y)
+        botaoajuda.Mostra(botaoajuda.x,botaoajuda.y)
+        #botaovoltar.Mostra(botaovoltar.x,botaovoltar.y)
+         
         
-        botaovoltar=Objeto("botaop.png",int(display_width/18),int(display_height*0.8),int(display_width/6),int(display_height/6))
-        botaovoltar.Tamanho(botaovoltar.xi,botaovoltar.yi)
-        botaovoltar.Texto("Voltar",pygame.color.Color("black"),40)
+        botaoajuda.MostraTexto()
+    
+        if botaoajuda.ColisaoMouse():
+            
+            botaoajuda.Texto("Ajuda",pygame.color.Color("green"),20)
+            botaoajuda.Mostra(botaoajuda.x,botaoajuda.y)
+            botaoajuda.MostraTexto()
+            
+            if pygame.mouse.get_pressed()[0]:
+                tutorial=1               
+                while tutorial:  
+                     
+                    chaotuto.Mostra(chaotuto.x,chaotuto.y)                    
+                    botaovoltar.Mostra(botaovoltar.x,botaovoltar.y)
+                    botaovoltar.MostraTexto()
                     
+                    for event in pygame.event.get():
+                         if event.type == pygame.QUIT:
+                             
+                             tutorial=0                                
+                             game=1
+                    
+                    if botaovoltar.ColisaoMouse():
+                        botaovoltar.Texto("Voltar",pygame.color.Color("green"),20)
+                        botaovoltar.MostraTexto()
+                        if pygame.mouse.get_pressed()[0]:
+                            tutorial=0
+                                                    
+                        
+                    else:
+                        botaovoltar.Texto("Voltar",pygame.color.Color("black"),20)
+                        botaovoltar.MostraTexto()
+                        
+                        
+                    pygame.display.update()
+                    clock.tick(30)
+                
+        else:
+            botaoajuda.Texto("Ajuda",pygame.color.Color("black"),20)
+            botaoajuda.MostraTexto()            
         
         for event in pygame.event.get():
             if event.type == pygame.QUIT:     
                 game=1
-                
+                                    
+            
             if botao1.ColisaoMouse():
+                
                 botao1.Texto("Iniciar",pygame.color.Color("green"),40)
                 if pygame.mouse.get_pressed()[0]:
                     game=1
@@ -273,8 +332,11 @@ def Menu():
                     
             else:
                 botao1.Texto("Iniciar",pygame.color.Color("black"),40)
+                
             
+                
             if botao2.ColisaoMouse():
+                
                 botao2.Texto("Highscores",pygame.color.Color("green"),40)
                 
                 if pygame.mouse.get_pressed()[0]:
@@ -289,6 +351,7 @@ def Menu():
                     
                     while highscores:
                         chao.Mostra(chao.x,chao.y)
+                        pygame.draw.rect(gameDisplay,pygame.color.Color("black"),(int(display_width/2-(int(display_width*0.6)/2))-3,int(display_height/5)-3 ,int(display_width*0.6)+5 ,int(display_height*0.6 )+5),5)
                         pygame.draw.rect(gameDisplay, pygame.color.Color("white"), (int(display_width/2-(int(display_width*0.6)/2)),int(display_height/5) ,int(display_width*0.6) ,int(display_height*0.6 ))) 
                         highscoretxt.MostraTexto()                          
                         
@@ -307,6 +370,7 @@ def Menu():
                            
                         
                         if botaovoltar.ColisaoMouse():
+                            
                             botaovoltar.Texto("Voltar",pygame.color.Color("green"),30)
                             if pygame.mouse.get_pressed()[0]:
                                 highscores = 0
@@ -330,8 +394,10 @@ def Menu():
                 
                 
                 
+                
             if botao3.ColisaoMouse():
-                botao3.Texto("Opções",pygame.color.Color("green"),40)
+                
+                botao3.Texto("Extras",pygame.color.Color("green"),40)
                 
                 if pygame.mouse.get_pressed()[0]:
                     opcoes = 1
@@ -349,12 +415,61 @@ def Menu():
                         botaoautores.Texto("Autores",pygame.color.Color("black"),30)
                         botaoautores.MostraTexto()
 
+                        if botaoautores.ColisaoMouse():                            
+                            botaoautores.Texto("Autores",pygame.color.Color("green"),30)
+                            botaoautores.MostraTexto()
+                            if pygame.mouse.get_pressed()[0]:
+                                autores=1
+                                while autores:
+                                    chao.Mostra(chao.x,chao.y)
+                                    pygame.draw.rect(gameDisplay,pygame.color.Color("black"),(146,97,505,455),5)
+                                    pygame.draw.rect(gameDisplay,pygame.color.Color("White"),(150,100,500,450))
+                                    
+                                    botaoautores.y=display_height/5-20
+                                    botaoautores.Texto("Gabriel Scodiero 'gabiuas'",pygame.color.Color("black"),30)
+                                    botaoautores.MostraTexto()
+                                    botaoautores.y=2*display_height/5-20
+                                    botaoautores.Texto("Pedro Suarez 'dançarino'",pygame.color.Color("black"),30)
+                                    botaoautores.MostraTexto()
+                                    botaoautores.y=3*display_height/5-20
+                                    botaoautores.Texto("Samuel Granato 'Neuer'",pygame.color.Color("black"),30)
+                                    botaoautores.MostraTexto()
+                                    botaoautores.y=4*display_height/5-20
+                                    botaoautores.Texto("Vitor Pereira 'perde-pênalti'",pygame.color.Color("black"),30)
+                                    botaoautores.MostraTexto()
+                                    
+                                    botaovoltar.Mostra(botaovoltar.x,botaovoltar.y)
+                                    botaovoltar.MostraTexto()
+                                    
+                                    if botaovoltar.ColisaoMouse():
+                                        
+                                        botaovoltar.Texto("Voltar",pygame.color.Color("green"),30)
+                                        if pygame.mouse.get_pressed()[0]:
+                                            autores = 0
+                                    else:
+                                        botaovoltar.Texto("Voltar",pygame.color.Color("black"),30)
+                                        
+                                    for event in pygame.event.get():
+                                        if event.type == pygame.QUIT:                               
+                                            game=1
+                                            opcoes=0
+                                            autores=0
+                                    
+                        
+                                    pygame.display.update()
+                                    clock.tick(30)
+                        
+                            
                         if botaovoltar.ColisaoMouse():
+                            
                             botaovoltar.Texto("Voltar",pygame.color.Color("green"),30)
+                            botaovoltar.MostraTexto()
                             if pygame.mouse.get_pressed()[0]:
                                 opcoes = 0
                         else:
                             botaovoltar.Texto("Voltar",pygame.color.Color("black"),30)
+                            botaovoltar.MostraTexto()
+                            
                             
                         for event in pygame.event.get():
                             if event.type == pygame.QUIT:                               
@@ -367,14 +482,16 @@ def Menu():
                         
                         
             else:
-                botao3.Texto("Opções",pygame.color.Color("black"),40)
+                botao3.Texto("Extras",pygame.color.Color("black"),40)
                     
                 
                         
         pygame.display.update()  
         clock.tick(30)
     
-def game_loop():           
+def game_loop():
+    pygame.mixer.music.load('Jogo.mp3')
+    pygame.mixer.music.play(-1,0)           
     cnt=0                           
     cnth=0
     runner.x_change = 10                                                   #Velocidade do objeto
@@ -466,6 +583,9 @@ def game_loop():
                         P=0
                 if event.key == pygame.K_ESCAPE:        
                         gameover=1
+                        pygame.mixer.music.stop()
+                        soundgo.play()
+                        
                         
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_LEFT:
@@ -501,10 +621,13 @@ def game_loop():
                 if listaf[i].file=="alface.png":
                     if runner.fisico=="Gordo" or runner.fisico=="Muito Gordo":
                         if runner.vida-20<1:
+                            sound=pygame.mixer.Sound("FicandoForte.wav")
+                            sound.play(loops =0)
                             runner.fisico="Forte"
                             runner.vida=abs(runner.vida-40)
                         else:
                             if runner.vida-20<120:
+                                
                                 runner.fisico="Gordo"
                             runner.vida-=20
                             
@@ -515,6 +638,7 @@ def game_loop():
                             runner.vidan=10
                         else:
                             if runner.vidam+40>120:
+                                
                                 runner.fisico="Magro"
                             runner.vidam+=40
                             
@@ -527,6 +651,8 @@ def game_loop():
                                 runner.vida+=20
                     else:
                             if runner.vidan+40>=195:
+                                sound=pygame.mixer.Sound("FicandoForte.wav")
+                                sound.play(loops =0)
                                 runner.fisico="Forte"
                                 runner.vidan=195
                                 runner.vida=10
@@ -542,6 +668,8 @@ def game_loop():
                         if runner.vida+80>195:
                             runner.vida=195
                             gameover=1
+                            soundgo.play()
+                            pygame.mixer.music.stop()
                             print("explodiu")
                         else:
                             if runner.vida+80>120:
@@ -562,6 +690,8 @@ def game_loop():
                             if runner.vida-80<1:
                                 runner.vida=abs(runner.vida-40)
                                 runner.fisico="Gordo"
+                                sound=pygame.mixer.Sound("FicandoGordo.wav")
+                                sound.play(loops =0)
                                 
                             else:
                                 if runner.vida-80<120:
@@ -570,6 +700,8 @@ def game_loop():
                                 
                     else:
                             if runner.vidan+40>=195:
+                                sound=pygame.mixer.Sound("FicandoGordo.wav")
+                                sound.play(loops =0)
                                 runner.fisico="Gordo"
                                 runner.vidan=195
                                 runner.vida=10
@@ -657,6 +789,7 @@ def game_loop():
                         elif event.key == pygame.K_ESCAPE:
                             gameover=0
                             inpute=0
+                            morto=1
                             Reiniciar()
                             Menu()
 
@@ -673,7 +806,7 @@ def game_loop():
                                 dictionary={"nome":name, "pontos":pontuacao}
                                 
                                 lista_hs.append(dictionary)
-                                print(lista_hs)
+                                
                                 lista_hs=sorted(lista_hs, key=lambda d: d['pontos'], reverse=True)
                                 
                                 json.dump(lista_hs, arquivo, indent=4)
@@ -717,6 +850,8 @@ def game_loop():
             elif runner.fisico=="Normal":
                 runner.vidan-=2
                 if runner.vidan<2:
+                    sound=pygame.mixer.Sound("FicandoForte.wav")
+                    sound.play(loops =0)
                     runner.fisico="Magro"
                     runner.vidam=195
                     runner.vidan=0
@@ -725,6 +860,8 @@ def game_loop():
                 runner.vidam-=2
                 if runner.vidam<2:
                     gameover=1
+                    soundgo.play()
+                    pygame.mixer.music.stop()
                 elif runner.vidam<120:
                     runner.fisico="Muito Magro"                
                     

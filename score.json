@@ -1,30 +1,58 @@
 [
-	{
-		"nome" : "joao",
-		"pontos" : 50
-	},
-	{
-		"nome" : "joao",
-		"pontos" : 20
-	},
-	{
-		"nome" : "joao",
-		"pontos" : 20
-	},
-	{
-		"nome" : "joao",
-		"pontos" : 20
-	},
-	{
-		"nome" : "joao",
-		"pontos" : 20
-	},
-	{
-		"nome" : "joao",
-		"pontos" : 20
-	},
-	{
-		"nome" : "pedro",
-		"pontos" : 20
-	}
+    {
+        "nome": "Samuel",
+        "pontos": 427.0
+    },
+    {
+        "nome": "Samu",
+        "pontos": 83.0
+    },
+    {
+        "nome": "r",
+        "pontos": 70.0
+    },
+    {
+        "nome": "joao",
+        "pontos": 50
+    },
+    {
+        "nome": "joao",
+        "pontos": 20
+    },
+    {
+        "nome": "joao",
+        "pontos": 20
+    },
+    {
+        "nome": "joao",
+        "pontos": 20
+    },
+    {
+        "nome": "joao",
+        "pontos": 20
+    },
+    {
+        "nome": "joao",
+        "pontos": 20
+    },
+    {
+        "nome": "pedro",
+        "pontos": 20
+    },
+    {
+        "nome": "Samu",
+        "pontos": 11.5
+    },
+    {
+        "nome": "Samu",
+        "pontos": 9.0
+    },
+    {
+        "nome": "r",
+        "pontos": -68.5
+    },
+    {
+        "nome": "Samuel",
+        "pontos": -116.5
+    }
 ]
