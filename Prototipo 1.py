@@ -655,7 +655,7 @@ def game_loop():
                                 sound.play(loops =0)
                                 runner.fisico="Forte"
                                 runner.vidan=195
-                                runner.vida=10
+                                runner.vida=abs(195-runner.vidan+40)
                             else:
                                 runner.vidan+=40
                   
@@ -699,14 +699,14 @@ def game_loop():
                                 runner.vida-=80
                                 
                     else:
-                            if runner.vidan+40>=195:
+                            if runner.vidan+60>=195:
                                 sound=pygame.mixer.Sound("FicandoGordo.wav")
                                 sound.play(loops =0)
                                 runner.fisico="Gordo"
                                 runner.vidan=195
-                                runner.vida=10
+                                runner.vida=abs(195-runner.vidan+60)
                             else:
-                                runner.vidan+=40
+                                runner.vidan+=60
                     
                 listaf.pop(i)                                           #Remove o alface da lista                                                                  
                 
@@ -857,7 +857,7 @@ def game_loop():
                     runner.vidan=0
                 
             elif runner.fisico=="Magro" or runner.fisico=="Muito Magro":
-                runner.vidam-=2
+                runner.vidam-=5
                 if runner.vidam<2:
                     gameover=1
                     soundgo.play()
