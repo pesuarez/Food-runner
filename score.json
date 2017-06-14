@@ -1,5 +1,9 @@
 [
     {
+        "nome": "SAMUMONSTRO",
+        "pontos": 5977.5
+    },
+    {
         "nome": "VitorHugooo",
         "pontos": 5122.5
     },
@@ -8,8 +12,13 @@
         "pontos": 3875.0
     },
     {
+<<<<<<< HEAD
         "nome": "brunosexy",
         "pontos": 3777.5
+=======
+        "nome": "Samuel",
+        "pontos": 3790.5
+>>>>>>> 4c08aaf7b1dff13d8384c8bde0f384ffe5f7ac81
     },
     {
         "nome": "SamueK",
